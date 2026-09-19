@@ -259,11 +259,18 @@
       <img src="photo1.jpg" class="active" alt="Наше фото 1">
       <img src="photo2.jpg" alt="Наше фото 2">
       <img src="photo3.jpg" alt="Наше фото 3">
+      <img src="photo4.jpg" alt="Фото 4">
+      <img src="photo5.jpg" alt="Фото 5">
+      <img src="photo6.jpg" alt="Фото 6"> 
+     
     </div>
     <div class="dots" id="dots">
       <div class="dot active"></div>
       <div class="dot"></div>
       <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+     
     </div>
   </div>
 
@@ -346,7 +353,7 @@
 
   setInterval(() => {
     goTo((current + 1) % slides.length);
-  }, 3500);
+  }, 2000);
 
   /* ===== РАСКРЫТИЕ СЮРПРИЗОВ ===== */
   function reveal(id) {
