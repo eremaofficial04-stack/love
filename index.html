@@ -5,129 +5,388 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Для тебя 💖</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   body {
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Segoe UI', 'Helvetica', sans-serif;
+    font-family: -apple-system, 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fbc2eb 100%);
-    overflow: hidden;
+    color: #333;
+    overflow-x: hidden;
+    padding: 20px 16px 40px;
     position: relative;
-    padding: 20px;
   }
 
-  /* падающие сердечки */
+  /* Падающие сердечки */
   .heart {
     position: fixed;
     top: -10vh;
-    font-size: 24px;
+    font-size: 22px;
     animation: fall linear infinite;
-    opacity: 0.8;
+    opacity: 0.7;
     pointer-events: none;
-    z-index: 1;
+    z-index: 0;
   }
   @keyframes fall {
     to { transform: translateY(120vh) rotate(360deg); }
   }
 
-  .card {
-    position: relative;
-    z-index: 2;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    border-radius: 24px;
-    padding: 40px 28px;
-    max-width: 420px;
-    width: 100%;
+  /* ===== ЭКРАН-ПРИВЕТСТВИЕ ===== */
+  #intro {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #ff6b9d, #d6336c);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 30px;
     text-align: center;
-    box-shadow: 0 20px 60px rgba(255, 100, 150, 0.35);
-    animation: appear 1.2s ease;
+    transition: opacity 0.8s, transform 0.8s;
   }
-  @keyframes appear {
-    from { opacity: 0; transform: translateY(30px); }
-    to   { opacity: 1; transform: translateY(0); }
+  #intro.hide {
+    opacity: 0;
+    transform: scale(1.1);
+    pointer-events: none;
+  }
+  #intro h1 {
+    color: #fff;
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+  #intro p {
+    color: rgba(255,255,255,0.9);
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+  #intro button {
+    background: #fff;
+    color: #d6336c;
+    border: none;
+    padding: 16px 44px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 700;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: pulse 1.6s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50%     { transform: scale(1.06); }
   }
 
-  h1 {
-    font-size: 26px;
-    color: #d6336c;
+  /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+  .container {
+    position: relative;
+    z-index: 2;
+    max-width: 440px;
+    margin: 0 auto;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s 0.3s, transform 0.8s 0.3s;
+  }
+  .container.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .card {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 28px 22px;
     margin-bottom: 18px;
+    box-shadow: 0 15px 40px rgba(255,100,150,0.25);
+  }
+
+  h2 {
+    color: #d6336c;
+    font-size: 22px;
+    margin-bottom: 14px;
+    text-align: center;
   }
 
   .message {
-    font-size: 17px;
+    font-size: 16px;
     line-height: 1.7;
     color: #444;
-    margin-bottom: 28px;
+    text-align: center;
     white-space: pre-line;
   }
 
-  button {
+  /* ===== СЛАЙДЕР ФОТО ===== */
+  .slider {
+    position: relative;
+    width: 100%;
+    height: 320px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #fce4ec;
+    margin-bottom: 14px;
+  }
+  .slider img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.8s;
+  }
+  .slider img.active { opacity: 1; }
+
+  .dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #f8bbd0;
+    transition: all 0.3s;
+  }
+  .dot.active {
+    background: #d6336c;
+    width: 22px;
+    border-radius: 4px;
+  }
+
+  /* ===== КНОПКИ ===== */
+  .btn {
+    width: 100%;
     background: linear-gradient(135deg, #ff6b9d, #d6336c);
     color: #fff;
     border: none;
-    padding: 15px 38px;
+    padding: 16px;
     border-radius: 50px;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
+    margin-bottom: 12px;
+    box-shadow: 0 8px 20px rgba(214,51,108,0.35);
+    transition: transform 0.15s;
     cursor: pointer;
-    box-shadow: 0 10px 25px rgba(214, 51, 108, 0.4);
-    transition: transform 0.2s, box-shadow 0.2s;
   }
-  button:active {
-    transform: scale(0.95);
-    box-shadow: 0 5px 15px rgba(214, 51, 108, 0.6);
+  .btn:active { transform: scale(0.96); }
+
+  .btn-outline {
+    background: #fff;
+    color: #d6336c;
+    border: 2px solid #f8bbd0;
+    box-shadow: none;
   }
 
-  .answer {
-    margin-top: 22px;
-    font-size: 20px;
+  /* ===== РАСКРЫВАЮЩИЕСЯ БЛОКИ ===== */
+  .reveal {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s ease, margin 0.4s;
+    text-align: center;
+    font-size: 16px;
     color: #d6336c;
-    font-weight: 700;
-    opacity: 0;
-    transform: scale(0.5);
-    transition: all 0.6s ease;
+    font-weight: 600;
+    line-height: 1.6;
   }
-  .answer.show {
-    opacity: 1;
-    transform: scale(1);
+  .reveal.open {
+    max-height: 400px;
+    margin-top: 10px;
+    margin-bottom: 6px;
+  }
+
+  /* ===== КОНФЕТТИ ===== */
+  .confetti {
+    position: fixed;
+    width: 10px; height: 10px;
+    top: -20px;
+    z-index: 999;
+    pointer-events: none;
+    animation: confetti-fall 3s linear forwards;
+  }
+  @keyframes confetti-fall {
+    to {
+      transform: translateY(110vh) rotate(720deg);
+      opacity: 0;
+    }
+  }
+
+  /* ===== ФИНАЛЬНЫЙ ЭКРАН ===== */
+  #final {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #d6336c, #ff6b9d);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 30px;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s;
+  }
+  #final.show { opacity: 1; pointer-events: auto; }
+  #final h1 { color: #fff; font-size: 32px; margin-bottom: 20px; }
+  #final p  { color: #fff; font-size: 18px; line-height: 1.7; margin-bottom: 30px; }
+  #final .big-heart {
+    font-size: 90px;
+    animation: beat 1s infinite;
+    margin-bottom: 20px;
+  }
+  @keyframes beat {
+    0%,100% { transform: scale(1); }
+    50%     { transform: scale(1.15); }
   }
 </style>
 </head>
 <body>
 
-  <div class="card">
-    <h1>Привет, любимая 💕</h1>
-    <p class="message">Каждый день с тобой — это лучшее,
-что случалось со мной.
+<!-- ЭКРАН-ПРИВЕТСТВИЕ -->
+<div id="intro">
+  <h1>Привет, любимая 💕</h1>
+  <p>У меня для тебя кое-что есть...</p>
+  <button onclick="openSite()">Открыть 💌</button>
+</div>
 
-Ты — моё вдохновение, мой покой
-и моё счастье.</p>
-    <button onclick="showLove()">Нажми на меня 💗</button>
-    <div class="answer" id="answer">Я тебя очень люблю! 💖</div>
+<!-- ОСНОВНОЙ КОНТЕНТ -->
+<div class="container" id="main">
+
+  <!-- ФОТО-СЛАЙДЕР -->
+  <div class="card">
+    <h2>Наши моменты 📸</h2>
+    <div class="slider" id="slider">
+      <img src="photo1.jpg" class="active" alt="Наше фото 1">
+      <img src="photo2.jpg" alt="Наше фото 2">
+      <img src="photo3.jpg" alt="Наше фото 3">
+    </div>
+    <div class="dots" id="dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
   </div>
 
+  <!-- ПРИЗНАНИЕ -->
+  <div class="card">
+    <h2>Моё признание 💌</h2>
+    <p class="message">Ты — моё самое большое счастье.
+Каждый день рядом с тобой — подарок.
+Спасибо, что ты есть. 💖</p>
+  </div>
+
+  <!-- СЮРПРИЗЫ -->
+  <div class="card">
+    <h2>Маленькие сюрпризы 🎁</h2>
+
+    <button class="btn btn-outline" onclick="reveal('s1')">
+      🎁 Сюрприз №1
+    </button>
+    <div class="reveal" id="s1">Ты — моя самая любимая улыбка 😊</div>
+
+    <button class="btn btn-outline" onclick="reveal('s2')">
+      🎁 Сюрприз №2
+    </button>
+    <div class="reveal" id="s2">Я помню каждое наше свидание и каждое слово 💫</div>
+
+    <button class="btn btn-outline" onclick="reveal('s3')">
+      🎁 Сюрприз №3
+    </button>
+    <div class="reveal" id="s3">С тобой я хочу встретить старость 👵👴</div>
+  </div>
+
+  <!-- ГЛАВНАЯ КНОПКА -->
+  <button class="btn" style="font-size:18px; padding:18px;" onclick="final()">
+    💖 Нажми на меня 💖
+  </button>
+
+</div>
+
+<!-- ФИНАЛЬНЫЙ ЭКРАН -->
+<div id="final">
+  <div class="big-heart">💖</div>
+  <h1>Я тебя очень люблю!</h1>
+  <p>Спасибо, что ты моя.<br>Навсегда твой 💍</p>
+</div>
+
 <script>
-  // Падающие сердечки
-  const hearts = ['💖','💕','💗','❤️','🌸','💘'];
+  /* ===== ПАДАЮЩИЕ СЕРДЕЧКИ ===== */
+  const heartEmojis = ['💖','💕','💗','❤️','🌸','💘','💞'];
   for (let i = 0; i < 20; i++) {
     const h = document.createElement('div');
     h.className = 'heart';
-    h.textContent = hearts[Math.floor(Math.random()*hearts.length)];
+    h.textContent = heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
     h.style.left = Math.random() * 100 + 'vw';
-    h.style.animationDuration = (5 + Math.random()*6) + 's';
-    h.style.animationDelay = (Math.random()*5) + 's';
-    h.style.fontSize = (16 + Math.random()*24) + 'px';
+    h.style.animationDuration = (6 + Math.random()*6) + 's';
+    h.style.animationDelay = (Math.random()*6) + 's';
+    h.style.fontSize = (14 + Math.random()*20) + 'px';
     document.body.appendChild(h);
   }
 
-  // Кнопка
-  function showLove() {
-    document.getElementById('answer').classList.add('show');
+  /* ===== ОТКРЫТИЕ САЙТА ===== */
+  function openSite() {
+    document.getElementById('intro').classList.add('hide');
+    setTimeout(() => {
+      document.getElementById('main').classList.add('show');
+    }, 300);
+  }
+
+  /* ===== СЛАЙДЕР ФОТО ===== */
+  const slides = document.querySelectorAll('#slider img');
+  const dots   = document.querySelectorAll('.dot');
+  let current  = 0;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  setInterval(() => {
+    goTo((current + 1) % slides.length);
+  }, 3500);
+
+  /* ===== РАСКРЫТИЕ СЮРПРИЗОВ ===== */
+  function reveal(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('open');
+    if (el.classList.contains('open')) {
+      burstConfetti(15);
+    }
+  }
+
+  /* ===== КОНФЕТТИ ===== */
+  const colors = ['#ff6b9d','#d6336c','#fecfef','#fbc2eb','#ff9a9e','#ffcc00'];
+  function burstConfetti(count) {
+    for (let i = 0; i < count; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      c.style.animationDuration = (2 + Math.random()*2) + 's';
+      c.style.animationDelay = (Math.random()*0.4) + 's';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 4500);
+    }
+  }
+
+  /* ===== ФИНАЛЬНЫЙ ЭКРАН ===== */
+  function final() {
+    burstConfetti(80);
+    setTimeout(() => {
+      document.getElementById('final').classList.add('show');
+      // повторные волны конфетти
+      let waves = 0;
+      const iv = setInterval(() => {
+        burstConfetti(40);
+        if (++waves >= 4) clearInterval(iv);
+      }, 800);
+    }, 400);
   }
 </script>
 </body>
 </html>
+    
